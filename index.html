@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Time Dilation — Two-Observer Simulator</title>
+<style>
+  :root {
+    --bg: #07080c;
+    --panel: #0f1118;
+    --ink: #e6e8ef;
+    --dim: #7b8190;
+    --accent: #7cf9ff;
+    --warm: #ffb86b;
+    --hot: #ff5c7a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+    overflow-x: hidden;
+  }
+  header {
+    padding: 18px 24px 8px;
+    border-bottom: 1px solid #1c1f2a;
+  }
+  h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+  h1 .sub { color: var(--dim); font-weight: 400; margin-left: 12px; }
+  .layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 50px);
+  }
+  aside {
+    background: var(--panel);
+    border-right: 1px solid #1c1f2a;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .mode-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid #2a2e3c;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .mode-toggle button {
+    background: transparent;
+    border: 0;
+    color: var(--dim);
+    padding: 10px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    transition: 0.15s;
+  }
+  .mode-toggle button.active {
+    background: var(--accent);
+    color: #001318;
+  }
+  .control { display: flex; flex-direction: column; gap: 6px; }
+  .control label {
+    font-size: 11px;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .control label .val { color: var(--accent); }
+  input[type=range] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 4px;
+    background: #2a2e3c; border-radius: 4px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 14px; height: 14px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 14px; height: 14px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer; border: 0;
+  }
+  .gamma-card {
+    border: 1px solid #2a2e3c;
+    border-radius: 8px;
+    padding: 14px;
+    background: #0a0c12;
+  }
+  .gamma-card .lbl { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 1.2px; }
+  .gamma-card .num { font-size: 28px; color: var(--warm); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .gamma-card .desc { font-size: 11px; color: var(--dim); margin-top: 6px; line-height: 1.5; }
+  .future-card, .preset-card {
+    border: 1px solid #2a2e3c;
+    border-radius: 8px;
+    padding: 14px;
+    background: #0a0c12;
+  }
+  .future-card .lbl, .preset-card .lbl {
+    font-size: 10px; color: var(--dim);
+    text-transform: uppercase; letter-spacing: 1.2px;
+    margin-bottom: 8px;
+  }
+  .future-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin: 6px 0;
+  }
+  .future-row input, .future-row select {
+    background: #07080c;
+    color: var(--ink);
+    border: 1px solid #2a2e3c;
+    border-radius: 4px;
+    padding: 6px 8px;
+    font: inherit; font-size: 12px;
+  }
+  .future-eq { font-size: 11px; color: var(--dim); margin-top: 6px; }
+  .future-result {
+    font-size: 20px;
+    color: var(--accent);
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .future-delta { font-size: 11px; color: var(--warm); margin-top: 4px; }
+  .preset { display: block; width: 100%; text-align: left;
+    background: #1a1d28; border: 1px solid #2a2e3c; color: var(--ink);
+    padding: 8px 10px; font: inherit; font-size: 11px;
+    border-radius: 4px; margin-top: 6px; cursor: pointer;
+    transition: 0.15s;
+  }
+  .preset:hover { background: #232733; border-color: var(--accent); }
+  .legend {
+    font-size: 11px;
+    color: var(--dim);
+    line-height: 1.7;
+    border-top: 1px solid #1c1f2a;
+    padding-top: 14px;
+  }
+  .legend code {
+    color: var(--accent);
+    background: #0a0c12;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  .actions { display: flex; gap: 8px; }
+  .actions button {
+    flex: 1;
+    background: #1a1d28;
+    border: 1px solid #2a2e3c;
+    color: var(--ink);
+    padding: 8px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 11px;
+    border-radius: 4px;
+    transition: 0.15s;
+  }
+  .actions button:hover { background: #232733; }
+  .stage {
+    position: relative;
+    display: grid;
+    grid-template-rows: 1fr auto;
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, #0c0f17 0%, #04050a 100%);
+  }
+  .readout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid #1c1f2a;
+    background: var(--panel);
+  }
+  .clock-card {
+    padding: 16px 20px;
+    border-right: 1px solid #1c1f2a;
+  }
+  .clock-card:last-child { border-right: 0; }
+  .clock-card .who {
+    font-size: 11px;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .clock-card .who .dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .clock-card .tick {
+    font-size: 26px;
+    margin-top: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+  .clock-card .meta {
+    font-size: 11px;
+    color: var(--dim);
+    margin-top: 4px;
+  }
+  .clock-card.lab .tick { color: var(--accent); }
+  .clock-card.lab .dot { background: var(--accent); }
+  .clock-card.mover .tick { color: var(--hot); }
+  .clock-card.mover .dot { background: var(--hot); }
+  .info-bar {
+    position: absolute;
+    top: 12px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--dim);
+    background: rgba(15,17,24,0.85);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #1c1f2a;
+    backdrop-filter: blur(8px);
+  }
+  .info-bar b { color: var(--ink); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Time Dilation <span class="sub">two-observer light-clock simulator</span></h1>
+</header>
+
+<div class="layout">
+
+  <aside>
+    <div class="mode-toggle" id="modeToggle">
+      <button data-mode="velocity" class="active">Velocity (SR)</button>
+      <button data-mode="gravity">Gravity (GR)</button>
+    </div>
+
+    <div class="control" id="velocityCtrl">
+      <label>Velocity (fraction of c) <span class="val" id="velVal">0.50</span></label>
+      <input type="range" id="vel" min="0" max="0.999" step="0.001" value="0.5">
+    </div>
+
+    <div class="control" id="gravityCtrl" style="display:none">
+      <label>r / r<sub>s</sub> (Schwarzschild radii) <span class="val" id="gravVal">3.0</span></label>
+      <input type="range" id="grav" min="1.01" max="20" step="0.01" value="3.0">
+    </div>
+
+    <div class="control">
+      <label>Simulation speed <span class="val" id="speedVal">1.0×</span></label>
+      <input type="range" id="speed" min="0.1" max="3" step="0.05" value="1.0">
+    </div>
+
+    <div class="gamma-card">
+      <div class="lbl">Time-dilation factor</div>
+      <div class="num" id="gammaNum">1.155</div>
+      <div class="desc" id="gammaDesc">The moving observer's clock ticks once for every <span id="gammaRatio">1.16</span> ticks of the stationary observer.</div>
+    </div>
+
+    <div class="actions">
+      <button id="resetBtn">Reset clocks</button>
+      <button id="pauseBtn">Pause</button>
+    </div>
+
+    <div class="future-card" id="futureCard">
+      <div class="lbl">Future travel — if observer B spends</div>
+      <div class="future-row">
+        <input type="number" id="dur" value="1" min="0.001" step="0.1">
+        <select id="durUnit">
+          <option value="1">seconds</option>
+          <option value="60">minutes</option>
+          <option value="3600">hours</option>
+          <option value="86400">days</option>
+          <option value="31557600" selected>years</option>
+        </select>
+      </div>
+      <div class="future-eq">in the field, observer A (outside) experiences:</div>
+      <div class="future-result" id="futureResult">1.155 years</div>
+      <div class="future-delta">B arrives <span id="futureDelta">+0.155 years</span> into A's future.</div>
+    </div>
+
+    <div class="preset-card">
+      <div class="lbl">Scenarios (click to load)</div>
+      <button class="preset" data-mode="velocity" data-v="0.00002555">ISS astronaut · 7.66 km/s (SR only)</button>
+      <button class="preset" data-mode="velocity" data-v="0.0000129">GPS satellite · 3.87 km/s (SR only)</button>
+      <button class="preset" data-mode="velocity" data-v="0.5">0.5 c starship (γ=1.155)</button>
+      <button class="preset" data-mode="velocity" data-v="0.866">0.866 c starship (γ=2)</button>
+      <button class="preset" data-mode="velocity" data-v="0.99">0.99 c starship (γ=7)</button>
+      <button class="preset" data-mode="velocity" data-v="0.9999">0.9999 c starship (γ=70)</button>
+      <button class="preset" data-mode="velocity" data-v="0.99999999">0.99999999 c (γ=7071)</button>
+      <button class="preset" data-mode="gravity" data-r="2">Hovering at r = 2 rs</button>
+      <button class="preset" data-mode="gravity" data-r="1.01">Hovering at r = 1.01 rs</button>
+      <button class="preset" data-mode="gravity" data-r="1.0001">Hovering at r = 1.0001 rs</button>
+    </div>
+
+    <div class="legend">
+      <b style="color:var(--ink)">What you're seeing</b><br>
+      Each frame contains a <b style="color:var(--ink)">light clock</b> — a photon bouncing between two mirrors. One bounce = one tick.<br><br>
+      In the <code>velocity</code> mode the right clock is moving at <code>v</code> relative to the lab, so from the lab's frame its photon traces a <em>diagonal</em>, longer path. Since <code>c</code> is constant, that clock ticks slower by exactly <code>γ</code>.<br><br>
+      In the <code>gravity</code> mode the right clock sits at radius <code>r</code> from a Schwarzschild mass; deeper in the well = slower ticks by <code>√(1 − r<sub>s</sub>/r)</code>.<br><br>
+      <b style="color:var(--ink)">The headline:</b> time dilation IS forward time travel. Strictly one-way — you can fast-forward yourself, but you arrive in a future you cannot return from.
+    </div>
+  </aside>
+
+  <div class="stage">
+    <div class="info-bar" id="infoBar">lab frame · both clocks visible</div>
+    <canvas id="cv"></canvas>
+    <div class="readout">
+      <div class="clock-card lab">
+        <div class="who"><span class="dot"></span>Observer A — stationary (lab frame)</div>
+        <div class="tick" id="tickA">0 ticks</div>
+        <div class="meta">proper time τ<sub>A</sub> = <span id="propA">0.00</span> s</div>
+      </div>
+      <div class="clock-card mover">
+        <div class="who"><span class="dot"></span>Observer B — inside the field</div>
+        <div class="tick" id="tickB">0 ticks</div>
+        <div class="meta">proper time τ<sub>B</sub> = <span id="propB">0.00</span> s · ratio <span id="ratio">1.000</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(() => {
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  let W = 0, H = 0;
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = cv.getBoundingClientRect();
+    cv.width = rect.width * dpr;
+    cv.height = rect.height * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    W = rect.width; H = rect.height;
+  }
+  window.addEventListener('resize', resize);
+
+  // --- state ---
+  const state = {
+    mode: 'velocity',          // 'velocity' | 'gravity'
+    v: 0.5,                    // v/c
+    rOverRs: 3.0,              // for gravity mode
+    simSpeed: 1.0,
+    paused: false,
+    // photon phase = [0,1) within one tick (vertical bounce)
+    phaseA: 0,
+    phaseB: 0,
+    tickA: 0,
+    tickB: 0,
+    moverX: 0,                 // horizontal offset of mover (lab frame)
+    lastT: performance.now(),
+    // visual: time it takes for ONE tick of the stationary clock at simSpeed=1
+    secPerTickLab: 1.4,
+    // clock geometry
+    clockW: 110,
+    clockH: 170,
+    cyclePx: 600,              // how far the mover travels before wrapping
+  };
+
+  // --- physics ---
+  function gamma(v) {
+    // v in [0, 1)
+    return 1 / Math.sqrt(1 - v*v);
+  }
+  function gravFactor(rOverRs) {
+    // Schwarzschild: dτ/dt = sqrt(1 - rs/r)
+    return Math.sqrt(1 - 1/rOverRs);
+  }
+  // Returns the ratio dτ_B / dτ_A — moving/inside clock ticks per lab tick.
+  function tickRatio() {
+    if (state.mode === 'velocity') return 1 / gamma(state.v);
+    return gravFactor(state.rOverRs);  // GR factor (≤1)
+  }
+
+  // --- UI wiring ---
+  const velSlider = document.getElementById('vel');
+  const gravSlider = document.getElementById('grav');
+  const speedSlider = document.getElementById('speed');
+  const velVal = document.getElementById('velVal');
+  const gravVal = document.getElementById('gravVal');
+  const speedVal = document.getElementById('speedVal');
+  const gammaNum = document.getElementById('gammaNum');
+  const gammaDesc = document.getElementById('gammaDesc');
+  const gammaRatio = document.getElementById('gammaRatio');
+  const infoBar = document.getElementById('infoBar');
+  const tickAEl = document.getElementById('tickA');
+  const tickBEl = document.getElementById('tickB');
+  const propAEl = document.getElementById('propA');
+  const propBEl = document.getElementById('propB');
+  const ratioEl = document.getElementById('ratio');
+
+  velSlider.addEventListener('input', e => {
+    state.v = parseFloat(e.target.value);
+    velVal.textContent = state.v.toFixed(3);
+    updateGammaCard();
+  });
+  gravSlider.addEventListener('input', e => {
+    state.rOverRs = parseFloat(e.target.value);
+    gravVal.textContent = state.rOverRs.toFixed(2);
+    updateGammaCard();
+  });
+  speedSlider.addEventListener('input', e => {
+    state.simSpeed = parseFloat(e.target.value);
+    speedVal.textContent = state.simSpeed.toFixed(1) + '×';
+  });
+
+  document.getElementById('modeToggle').addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    setMode(b.dataset.mode);
+    updateGammaCard();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    state.tickA = state.tickB = 0;
+    state.phaseA = state.phaseB = 0;
+    state.moverX = 0;
+  });
+  const pauseBtn = document.getElementById('pauseBtn');
+  pauseBtn.addEventListener('click', () => {
+    state.paused = !state.paused;
+    pauseBtn.textContent = state.paused ? 'Resume' : 'Pause';
+  });
+
+  function updateGammaCard() {
+    const r = tickRatio();              // dτ_B / dτ_A,  ≤ 1
+    const factor = 1 / r;               // how many lab ticks per mover tick
+    if (state.mode === 'velocity') {
+      const g = gamma(state.v);
+      gammaNum.textContent = 'γ = ' + (g >= 1000 ? g.toExponential(3) : g.toFixed(3));
+      gammaDesc.innerHTML = `Moving observer's clock ticks once for every <span id="gammaRatio">${factor >= 1000 ? factor.toExponential(2) : factor.toFixed(2)}</span> ticks of the lab observer.`;
+      infoBar.innerHTML = `lab frame · mover at <b>v = ${state.v.toFixed(8).replace(/0+$/,'').replace(/\.$/,'')} c</b> · γ = ${g >= 1000 ? g.toExponential(3) : g.toFixed(3)}`;
+    } else {
+      gammaNum.textContent = '√(1−rs/r) = ' + r.toFixed(5);
+      gammaDesc.innerHTML = `Observer in the well ticks once for every <span id="gammaRatio">${factor.toFixed(2)}</span> ticks of the distant observer.`;
+      infoBar.innerHTML = `distant frame · observer at <b>r/rs = ${state.rOverRs.toFixed(4)}</b> · slowing = ${r.toFixed(5)}`;
+    }
+    updateFuturePanel();
+  }
+
+  // --- future-travel panel ---
+  const durInput = document.getElementById('dur');
+  const durUnitSel = document.getElementById('durUnit');
+  const futureResult = document.getElementById('futureResult');
+  const futureDelta = document.getElementById('futureDelta');
+
+  function formatTime(seconds) {
+    const abs = Math.abs(seconds);
+    if (abs < 1e-12) return seconds.toExponential(3) + ' s';
+    if (abs < 1e-9)  return (seconds * 1e12).toFixed(3) + ' ps';
+    if (abs < 1e-6)  return (seconds * 1e9).toFixed(3) + ' ns';
+    if (abs < 1e-3)  return (seconds * 1e6).toFixed(3) + ' µs';
+    if (abs < 1)     return (seconds * 1000).toFixed(3) + ' ms';
+    if (abs < 60)    return seconds.toFixed(3) + ' s';
+    if (abs < 3600)  return (seconds / 60).toFixed(3) + ' min';
+    if (abs < 86400) return (seconds / 3600).toFixed(3) + ' hours';
+    if (abs < 31557600) return (seconds / 86400).toFixed(3) + ' days';
+    if (abs < 31557600 * 1000) return (seconds / 31557600).toFixed(3) + ' years';
+    if (abs < 31557600 * 1e6)  return (seconds / 31557600 / 1000).toFixed(3) + ' kyr';
+    if (abs < 31557600 * 1e9)  return (seconds / 31557600 / 1e6).toFixed(3) + ' Myr';
+    return (seconds / 31557600 / 1e9).toFixed(3) + ' Gyr';
+  }
+
+  function updateFuturePanel() {
+    const dur_B = parseFloat(durInput.value) * parseFloat(durUnitSel.value); // proper time for B in seconds
+    const factor = tickRatio();    // dτ_B / dτ_A
+    const dur_A = dur_B / factor;  // coordinate time A experiences
+    const delta = dur_A - dur_B;
+    futureResult.textContent = formatTime(dur_A);
+    futureDelta.textContent = '+' + formatTime(delta);
+  }
+  durInput.addEventListener('input', updateFuturePanel);
+  durUnitSel.addEventListener('change', updateFuturePanel);
+
+  // --- presets ---
+  document.querySelectorAll('.preset').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      if (mode === 'velocity') {
+        const v = parseFloat(btn.dataset.v);
+        setMode('velocity');
+        state.v = v;
+        velSlider.value = Math.min(v, 0.999);  // slider can't go to 1.0
+        velVal.textContent = v < 0.001 ? v.toExponential(2) : v.toFixed(6).replace(/0+$/,'').replace(/\.$/,'');
+      } else {
+        const r = parseFloat(btn.dataset.r);
+        setMode('gravity');
+        state.rOverRs = r;
+        gravSlider.value = Math.max(1.01, Math.min(20, r));
+        gravVal.textContent = r.toFixed(4);
+      }
+      updateGammaCard();
+    });
+  });
+
+  function setMode(mode) {
+    state.mode = mode;
+    document.querySelectorAll('#modeToggle button').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === mode);
+    });
+    document.getElementById('velocityCtrl').style.display = mode === 'velocity' ? '' : 'none';
+    document.getElementById('gravityCtrl').style.display = mode === 'gravity' ? '' : 'none';
+  }
+
+  updateGammaCard();
+
+  // --- drawing ---
+  function drawClock(cx, cy, phase, label, color, opts={}) {
+    const w = state.clockW;
+    const h = state.clockH;
+    // chassis
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.fillStyle = '#0c0f17';
+    ctx.strokeStyle = '#2a2e3c';
+    ctx.lineWidth = 1;
+    roundRect(-w/2, -h/2, w, h, 10);
+    ctx.fill();
+    ctx.stroke();
+
+    // mirrors
+    ctx.fillStyle = '#3a4256';
+    ctx.fillRect(-w/2 + 16, -h/2 + 20, w - 32, 6);
+    ctx.fillRect(-w/2 + 16,  h/2 - 26, w - 32, 6);
+    ctx.fillStyle = color;
+    ctx.globalAlpha = 0.55;
+    ctx.fillRect(-w/2 + 16, -h/2 + 20, w - 32, 2);
+    ctx.fillRect(-w/2 + 16,  h/2 - 24, w - 32, 2);
+    ctx.globalAlpha = 1;
+
+    // photon path — vertical bounce, phase in [0,1)
+    const yTop = -h/2 + 26;
+    const yBot =  h/2 - 26;
+    const span = yBot - yTop;
+    // 0 -> 0.5 going down, 0.5 -> 1.0 going up
+    const p2 = phase < 0.5 ? phase * 2 : (1 - phase) * 2;
+    const y = yTop + p2 * span;
+
+    // trail
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = 0.18;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, yTop);
+    ctx.lineTo(0, yBot);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // photon dot
+    const grad = ctx.createRadialGradient(0, y, 0, 0, y, 14);
+    grad.addColorStop(0, color);
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(0, y, 14, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(0, y, 3, 0, Math.PI*2);
+    ctx.fill();
+
+    // label
+    ctx.fillStyle = '#7b8190';
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, 0, h/2 + 16);
+
+    ctx.restore();
+  }
+
+  function drawDiagonalPath(cx, cy, phase, color, vx) {
+    // In the LAB frame: while the photon goes from top mirror to bottom mirror
+    // (which takes longer than h/c because the photon also has to travel
+    // horizontally at vx), the clock moves horizontally by vx * dt_lab.
+    // Visualize this as a diagonal trail behind the mover.
+    if (Math.abs(vx) < 0.001) return;
+    const h = state.clockH;
+    const yTop = cy - h/2 + 26;
+    const yBot = cy + h/2 - 26;
+    const span = yBot - yTop;
+    const p2 = phase < 0.5 ? phase * 2 : (1 - phase) * 2;
+    const y = yTop + p2 * span;
+
+    // trailing diagonal: where the photon has been over this leg
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = 0.35;
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([3, 4]);
+    ctx.beginPath();
+    // trail spans backwards over the current half-leg
+    const trailLen = 90 * vx;          // visual scale of horizontal drift per half-leg
+    const startX = cx - trailLen * (phase < 0.5 ? phase*2 : (1-phase)*2);
+    const startY = phase < 0.5 ? yTop : yBot;
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(cx, y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawGravityWell(cx, cy, rOverRs) {
+    // central mass blob + warped grid hint
+    ctx.save();
+    const r = 26;
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r*4);
+    grad.addColorStop(0, '#ff5c7a');
+    grad.addColorStop(0.3, 'rgba(255,92,122,0.25)');
+    grad.addColorStop(1, 'rgba(255,92,122,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r*4, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle = '#ff5c7a';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // ring at r/rs
+    ctx.strokeStyle = 'rgba(255,184,107,0.5)';
+    ctx.setLineDash([4, 6]);
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * rOverRs, 0, Math.PI*2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
+  }
+
+  function drawBackground() {
+    ctx.clearRect(0, 0, W, H);
+    // subtle starfield
+    for (let i = 0; i < 60; i++) {
+      const x = (i * 73 + (i * i * 17) % W) % W;
+      const y = (i * 131 + (i * 41) % H) % H;
+      ctx.fillStyle = `rgba(255,255,255,${0.05 + (i % 7) * 0.02})`;
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+
+  // --- main loop ---
+  function frame(now) {
+    const dt = Math.min(0.05, (now - state.lastT) / 1000) * state.simSpeed;
+    state.lastT = now;
+
+    if (!state.paused) {
+      // Lab clock advances at 1 tick per secPerTickLab seconds of sim time
+      const labRate = 1 / state.secPerTickLab;        // ticks per sim-second
+      const moverRate = labRate * tickRatio();        // moverRate ≤ labRate
+
+      state.phaseA += labRate * dt;
+      state.phaseB += moverRate * dt;
+
+      while (state.phaseA >= 1) { state.phaseA -= 1; state.tickA += 1; }
+      while (state.phaseB >= 1) { state.phaseB -= 1; state.tickB += 1; }
+
+      if (state.mode === 'velocity') {
+        // visual horizontal motion of mover
+        state.moverX += state.v * 60 * dt;
+        if (state.moverX > state.cyclePx) state.moverX -= state.cyclePx * 2;
+      } else {
+        state.moverX = 0;
+      }
+    }
+
+    drawBackground();
+
+    // layout: stationary clock on the left, mover on the right
+    const baseY = H * 0.45;
+    const ax = W * 0.30;
+    const bx = W * 0.70;
+
+    if (state.mode === 'velocity') {
+      // mover oscillates horizontally for visual flavor
+      const oscX = ((state.moverX % state.cyclePx) + state.cyclePx) % state.cyclePx;
+      const bOffset = (oscX / state.cyclePx - 0.5) * 200;
+      drawDiagonalPath(bx + bOffset, baseY, state.phaseB, '#ff5c7a', state.v);
+      drawClock(ax, baseY, state.phaseA, 'A — lab', '#7cf9ff');
+      drawClock(bx + bOffset, baseY, state.phaseB, `B — v=${state.v.toFixed(2)}c`, '#ff5c7a');
+
+      // motion arrow on the mover
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,92,122,0.6)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(bx + bOffset + 70, baseY);
+      ctx.lineTo(bx + bOffset + 70 + 40 * state.v, baseY);
+      ctx.stroke();
+      // arrowhead
+      const hx = bx + bOffset + 70 + 40 * state.v;
+      ctx.beginPath();
+      ctx.moveTo(hx, baseY);
+      ctx.lineTo(hx - 6, baseY - 4);
+      ctx.lineTo(hx - 6, baseY + 4);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(255,92,122,0.7)';
+      ctx.fill();
+      ctx.restore();
+    } else {
+      // gravity mode
+      drawGravityWell(bx + 60, baseY, state.rOverRs);
+      drawClock(ax, baseY, state.phaseA, 'A — far away', '#7cf9ff');
+      drawClock(bx + 60 - 26 * state.rOverRs - 60, baseY, state.phaseB, `B — at r=${state.rOverRs.toFixed(2)}rs`, '#ff5c7a');
+    }
+
+    // update readouts
+    tickAEl.textContent = state.tickA + ' tick' + (state.tickA === 1 ? '' : 's');
+    tickBEl.textContent = state.tickB + ' tick' + (state.tickB === 1 ? '' : 's');
+    propAEl.textContent = (state.tickA + state.phaseA).toFixed(2);
+    propBEl.textContent = (state.tickB + state.phaseB).toFixed(2);
+    const denom = (state.tickA + state.phaseA);
+    const num   = (state.tickB + state.phaseB);
+    ratioEl.textContent = denom > 0.001 ? (num / denom).toFixed(3) : '—';
+
+    requestAnimationFrame(frame);
+  }
+
+  resize();
+  state.lastT = performance.now();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
