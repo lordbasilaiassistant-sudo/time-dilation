@@ -119,13 +119,16 @@ real one-way time travel. The cheapest already-operational time machine is "spen
 long time on the ISS" (~10 ms/year of forward jump). The next-cheapest is "engineer
 relativistic flight" — which nobody has done, because:
 
+All numbers below are computed live in the sim's cost panel; they're not estimates.
+
 | Goal (100 kg person) | Kinetic energy needed | In familiar units |
 |---|---|---|
-| γ = 1.0001 (8 hr forward/year)  | 9.0 × 10¹² J     | ~2 kt TNT |
-| γ = 1.155 (0.5 c — 57 days/yr) | 1.39 × 10¹⁸ J    | ~330 Mt — bigger than Tsar Bomba |
-| γ = 2     (0.866 c — 1 yr/yr)  | 8.99 × 10¹⁸ J    | ~2.1 Gt — ~1.5% world annual energy |
-| γ = 7     (0.99 c)             | 5.39 × 10¹⁹ J    | ~13 Gt |
-| γ = 70    (0.9999 c — 69 yr/yr) | 6.27 × 10²⁰ J   | **~world annual energy budget** |
+| ISS speed (7.66 km/s — 10 ms/year forward)   | 2.93 GJ           | ~700 kg TNT |
+| γ = 1.155 (0.5 c — 57 days/yr forward)        | 1.39 × 10¹⁸ J     | ~330 Mt — bigger than Tsar Bomba |
+| γ = 2     (0.866 c — 1 yr/yr forward)         | 8.99 × 10¹⁸ J     | ~2.15 Gt — ~1.5% world annual energy |
+| γ = 7     (0.99 c — 6 yr/yr forward)          | 5.47 × 10¹⁹ J     | ~13 Gt — ~9% world annual energy |
+| γ = 70    (0.9999 c — 69 yr/yr forward)       | 6.27 × 10²⁰ J     | ~150 Gt — **~world annual energy budget** |
+| γ = 7,071 (0.99999999 c — 7,000 yr/yr)        | 6.35 × 10²² J     | ~15 Tt — **~100× world annual** |
 
 Gravitational time dilation has the same problem — you need a black hole. There
 are no nearby black holes. The nearest known stellar-mass black hole (Gaia BH1)
