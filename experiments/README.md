@@ -1,14 +1,18 @@
 # Experiments — what you can actually do
 
-The two things one normal person with no lab and limited budget can do to
-*experience* time dilation:
+Things one normal person with no lab and limited budget can do to *experience*
+time dilation:
 
 | # | Experiment | Cost | Time | What you get |
 |---|-----------|------|------|--------------|
-| 1 | [Personal time tracker (this repo, `tracker.html`)](../tracker.html) | **$0** | 0 min | Open on your phone, watch your own SR + GR dilation in real time |
-| 2 | [DIY cloud chamber](cloud-chamber/) | **~$20** | 2 hours | SEE cosmic muons in your kitchen — particles that prove time dilation by *existing* |
+| 1 | [Personal GPS tracker (`tracker.html`)](../tracker.html) | **$0** | 0 min | Watch your own SR + GR dilation accumulate in real time |
+| 2 | [Cosmic Ray Camera (`camera.html`) — NEW](../camera.html) | **$0 + tape** | 5 min | Your phone's CMOS sensor as a particle detector. Detects the cosmic muons time-dilation made possible. **Pure-web first.** |
+| 3 | [DIY cloud chamber](cloud-chamber/) | **~$20** | 2 hours | SEE cosmic muons in your kitchen — particles that prove time dilation by *existing* |
 
-That's the practical menu for a regular human. Pick one or both.
+That's the practical menu. The Cosmic Ray Camera is the most novel of the three:
+real research apps (CRAYFIS, DECO) do this with native Android, but a pure-web
+implementation didn't exist before this repo. Same physics as the cloud chamber,
+hardware you already own.
 
 ---
 

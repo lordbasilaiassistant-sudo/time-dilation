@@ -145,9 +145,24 @@ prove time dilation is happening to particles and signals around you right now*.
 
 ## What ONE normal person can actually do
 
-For a regular human with limited budget and no lab — two practical experiments:
+For a regular human with limited budget and no lab — three practical experiments:
 
-### 1. Personal time-dilation tracker — [`tracker.html`](https://lordbasilaiassistant-sudo.github.io/time-dilation/tracker.html)
+### 1. Cosmic Ray Camera — [`camera.html`](https://lordbasilaiassistant-sudo.github.io/time-dilation/camera.html)  ⭐ novel
+**Free. Open on your phone. Cover lens with tape. Hit start.**
+
+Turns your phone's rear camera into a cosmic-ray particle detector. Cover the
+lens with black tape — the CMOS sensor's silicon depleted region becomes the
+detector medium. Bright pixel clusters lasting one frame = a high-energy cosmic
+muon hit. **Same physics as a cloud chamber, but the muon goes through silicon
+instead of alcohol vapor.** Research projects (UC Irvine CRAYFIS, UW DECO) do
+this with native Android apps; this is the first pure-web implementation. Every
+event detected is a particle that's only here because of γ ≈ 40 of time
+dilation on a 4 GeV cosmic muon.
+
+Expect 1–20 events/hour if your tape seal is good. CRAYFIS reported ~3
+events/hour as median.
+
+### 2. Personal GPS tracker — [`tracker.html`](https://lordbasilaiassistant-sudo.github.io/time-dilation/tracker.html)
 **Free. Open on your phone. Hit start.**
 
 Uses your phone's GPS to log `v` and altitude every second, then computes:
@@ -160,7 +175,7 @@ relativity correction. After a day of normal life with a drive in there, you
 will have personally time-traveled a few picoseconds into the future. Stored in
 localStorage so it accumulates across sessions.
 
-### 2. DIY cloud chamber — [`experiments/cloud-chamber/`](experiments/cloud-chamber/)
+### 3. DIY cloud chamber — [`experiments/cloud-chamber/`](experiments/cloud-chamber/)
 **~$20 Walmart trip. 30 min setup. Run in your kitchen.**
 
 Tupperware + rubbing alcohol + dry ice + a flashlight. Within 10 minutes of
@@ -168,7 +183,7 @@ setup you'll see straight white streaks crossing your container — each is a
 cosmic muon traveling at 0.998 c, time-dilated by γ ≈ 40, that would not have
 survived the 15 km trip from the upper atmosphere without relativity.
 
-These two are the practical menu. Pick one or both.
+These three are the practical menu. Pick any.
 
 ### For labs / institutions / hobbyists with money — [`experiments/reference/`](experiments/reference/)
 

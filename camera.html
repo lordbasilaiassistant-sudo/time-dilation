@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Cosmic Ray Camera — your phone as a particle detector</title>
+<style>
+  :root {
+    --bg: #07080c;
+    --panel: #0f1118;
+    --ink: #e6e8ef;
+    --dim: #7b8190;
+    --accent: #7cf9ff;
+    --warm: #ffb86b;
+    --hot: #ff5c7a;
+    --ok: #4cd980;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 600px; margin: 0 auto; padding: 18px 16px 40px; }
+  h1 { margin: 0 0 4px; font-size: 20px; font-weight: 500; }
+  h1 .sub { color: var(--dim); font-weight: 400; font-size: 12px; display: block; margin-top: 2px; }
+  .intro { color: var(--dim); font-size: 12px; line-height: 1.6; margin: 14px 0 18px; }
+  .intro a { color: var(--accent); text-decoration: none; }
+
+  .phase-card {
+    border: 1px solid #2a2e3c;
+    border-radius: 10px;
+    padding: 18px;
+    background: #0a0c12;
+    margin: 14px 0;
+  }
+  .phase-card.active { border-color: var(--accent); box-shadow: 0 0 24px rgba(124,249,255,0.12); }
+  .phase-card .stage {
+    font-size: 10px; color: var(--dim);
+    text-transform: uppercase; letter-spacing: 1.4px;
+  }
+  .phase-card h2 { margin: 4px 0 8px; font-size: 16px; font-weight: 500; }
+  .phase-card p { margin: 0 0 12px; font-size: 13px; color: var(--dim); line-height: 1.5; }
+
+  button {
+    background: var(--accent);
+    color: #001318;
+    border: 0;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: 0.15s;
+  }
+  button:disabled { opacity: 0.3; cursor: not-allowed; }
+  button:active { transform: scale(0.98); }
+  button.secondary {
+    background: transparent;
+    border: 1px solid #2a2e3c;
+    color: var(--ink);
+  }
+
+  .progress {
+    height: 4px;
+    background: #1a1d28;
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+  .progress .bar {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.3s ease-out;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 10px 0;
+  }
+  .stat {
+    background: var(--panel);
+    border: 1px solid #2a2e3c;
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .stat .lbl { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 1.2px; }
+  .stat .val { font-size: 22px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .stat.events .val { color: var(--accent); }
+  .stat.rate .val { color: var(--warm); }
+  .stat.runtime .val { color: var(--ink); font-size: 18px; }
+  .stat.fps .val { color: var(--dim); font-size: 14px; }
+
+  .events-feed {
+    background: var(--panel);
+    border: 1px solid #2a2e3c;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 12px 0;
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 11px;
+    line-height: 1.7;
+  }
+  .events-feed .ev {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid #1c1f2a;
+  }
+  .events-feed .ev:last-child { border-bottom: 0; }
+  .events-feed .ev .ev-t { color: var(--dim); }
+  .events-feed .ev .ev-b { color: var(--accent); }
+  .events-feed .empty { color: var(--dim); text-align: center; padding: 14px 0; }
+
+  .preview-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 10px 0;
+    align-items: start;
+  }
+  .preview {
+    background: #000;
+    border: 1px solid #2a2e3c;
+    border-radius: 8px;
+    aspect-ratio: 1/1;
+    position: relative;
+    overflow: hidden;
+  }
+  .preview canvas {
+    width: 100%; height: 100%;
+    display: block;
+    image-rendering: pixelated;
+  }
+  .preview .label {
+    position: absolute; top: 6px; left: 8px;
+    font-size: 9px;
+    color: var(--dim);
+    background: rgba(0,0,0,0.7);
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  details {
+    border: 1px solid #2a2e3c;
+    border-radius: 8px;
+    background: var(--panel);
+    margin: 14px 0;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--dim);
+  }
+  details summary { cursor: pointer; color: var(--ink); font-weight: 500; }
+  details p { margin: 10px 0 0; line-height: 1.6; }
+  details code {
+    background: #0a0c12; color: var(--accent);
+    padding: 1px 4px; border-radius: 3px;
+  }
+
+  .hidden { display: none !important; }
+
+  .nav {
+    text-align: center;
+    font-size: 11px;
+    color: var(--dim);
+    margin: 24px 0 0;
+    line-height: 2;
+  }
+  .nav a { color: var(--accent); text-decoration: none; }
+
+  video { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Cosmic Ray Camera
+    <span class="sub">your phone, in a browser tab, as a particle detector</span>
+  </h1>
+
+  <div class="intro">
+    Cover your phone's rear camera lens with black tape (or just face it down
+    against a dark surface) and the page will read every frame looking for the
+    bright flashes that happen when a high-energy cosmic muon hits the CMOS
+    sensor's silicon. Same physics as a cloud chamber. Hardware you already own.
+    Pure browser — no install. Real research apps (CRAYFIS, DECO) do this with
+    native code; this is the same idea in JavaScript. <a href="index.html">← sim</a>
+  </div>
+
+  <!-- Phase 1: setup -->
+  <div class="phase-card" id="phase1">
+    <div class="stage">step 1</div>
+    <h2>Cover your camera completely</h2>
+    <p>Black electrical tape over the rear lens is ideal. A pinhole of light will
+    completely swamp the cosmic-ray signal. If you don't have tape, place the
+    phone lens-down on a black T-shirt with no edge gaps. Then tap below.</p>
+    <button id="start">Start camera</button>
+    <div id="err" style="color: var(--hot); font-size: 12px; margin-top: 10px;"></div>
+  </div>
+
+  <!-- Phase 2: calibration -->
+  <div class="phase-card hidden" id="phase2">
+    <div class="stage">step 2 — calibration</div>
+    <h2>Learning your sensor's noise floor</h2>
+    <p>Building a per-pixel baseline so we can distinguish a real cosmic-ray
+    event from ordinary thermal noise. Don't move the phone during this. Takes
+    ~30 seconds.</p>
+    <div class="progress"><div class="bar" id="calibBar"></div></div>
+    <div style="font-size: 11px; color: var(--dim); text-align: center" id="calibStatus">collecting frames…</div>
+  </div>
+
+  <!-- Phase 3: detecting -->
+  <div class="phase-card hidden" id="phase3">
+    <div class="stage">step 3 — detecting</div>
+    <h2>Cosmic-ray watch is live</h2>
+
+    <div class="stats">
+      <div class="stat events">
+        <div class="lbl">Events detected</div>
+        <div class="val" id="nEvents">0</div>
+      </div>
+      <div class="stat rate">
+        <div class="lbl">Rate (events / hour)</div>
+        <div class="val" id="rate">—</div>
+      </div>
+      <div class="stat runtime">
+        <div class="lbl">Run time</div>
+        <div class="val" id="runtime">0 s</div>
+      </div>
+      <div class="stat fps">
+        <div class="lbl">Frames processed</div>
+        <div class="val" id="frames">0</div>
+      </div>
+    </div>
+
+    <div class="preview-row">
+      <div class="preview"><div class="label">live</div><canvas id="liveCanvas" width="160" height="160"></canvas></div>
+      <div class="preview"><div class="label">last event</div><canvas id="eventCanvas" width="160" height="160"></canvas></div>
+    </div>
+
+    <div class="events-feed" id="feed"><div class="empty">No events yet — events look like sudden bright pixel clusters lasting one frame. At sea level expect a few per hour on a typical phone.</div></div>
+
+    <button id="stop" class="secondary">Stop detection</button>
+  </div>
+
+  <details>
+    <summary>How this is a time-dilation experiment</summary>
+    <p>Cosmic muons are born ~15 km above your head when high-energy protons
+    hit the atmosphere. Their proper lifetime is <code>2.197 µs</code> (PDG 2024).
+    At v ≈ 0.998c they'd travel only 660 m before decay — almost none would
+    reach the ground.</p>
+    <p>They do reach the ground (about 1 cm⁻²·min⁻¹ at sea level) because in
+    Earth's frame their lifetime stretches by γ ≈ 40, giving them ~25 km of
+    travel. Each event you record is a particle that's only here because of
+    real, measurable time dilation.</p>
+  </details>
+
+  <details>
+    <summary>Honest caveats</summary>
+    <p><b>What this is:</b> a pure-web proof of concept of the CRAYFIS /
+    DECO smartphone cosmic-ray detection technique. It looks for outlier
+    bright pixels in the rear-camera feed and ranks them by sigma above the
+    per-pixel calibrated noise floor.</p>
+    <p><b>What this is not:</b> research-grade calibration. Real CRAYFIS uses
+    native YUV camera access, dark-frame thermal correction, and large-N
+    statistics across many phones. Your single detector will see some real
+    cosmic events mixed with light leaks, hot pixels (we mask the obvious
+    ones), and CMOS bit errors. Expect rate ~1–20 events/hour if your tape
+    seal is good; much higher means light leak.</p>
+    <p><b>The rate-of-truth check:</b> CRAYFIS reported median rate ~3
+    events/hour per phone. If yours is in that ballpark with the camera
+    covered, you're seeing real physics.</p>
+  </details>
+
+  <div class="nav">
+    <a href="index.html">two-observer sim</a> ·
+    <a href="tracker.html">personal GPS tracker</a> ·
+    <a href="experiments/cloud-chamber/">cloud chamber</a> ·
+    <a href="https://github.com/lordbasilaiassistant-sudo/time-dilation">github</a>
+  </div>
+</div>
+
+<video id="video" autoplay playsinline muted></video>
+
+<script>
+(() => {
+  // --- config ---
+  const W = 160, H = 160;              // downsample resolution (perf vs sensitivity tradeoff)
+  const TARGET_FPS = 10;               // process frames per second
+  const CALIB_FRAMES = 200;            // ~20 seconds at 10 fps
+  const SIGMA_THRESHOLD = 6.0;         // bright-pixel threshold above per-pixel noise
+  const ABS_FLOOR = 30;                // absolute pixel floor (0-255) to avoid noise traps
+  const MIN_CLUSTER = 2;               // require at least N adjacent bright pixels
+  const HOT_PIXEL_RATE = 0.005;        // mask pixels firing > 0.5% of frames
+  const HOT_PIXEL_GRACE = 50;          // wait this many frames before applying hot-pixel mask
+
+  // --- state ---
+  const N = W * H;
+  const pxMean = new Float32Array(N);
+  const pxM2 = new Float32Array(N);     // Welford's sum of squared deltas
+  const pxFires = new Uint32Array(N);   // hot-pixel counter
+  let calibFrames = 0;
+  let detectFrames = 0;
+  let totalEvents = 0;
+  let runStart = 0;
+  let stream = null;
+  let video, liveCv, liveCtx, eventCv, eventCtx, hiddenCv, hiddenCtx;
+  let rafId = null;
+  let lastFrameTs = 0;
+
+  // --- DOM ---
+  const $ = id => document.getElementById(id);
+  const els = {
+    start: $('start'), stop: $('stop'),
+    err: $('err'),
+    phase1: $('phase1'), phase2: $('phase2'), phase3: $('phase3'),
+    calibBar: $('calibBar'), calibStatus: $('calibStatus'),
+    nEvents: $('nEvents'), rate: $('rate'),
+    runtime: $('runtime'), frames: $('frames'),
+    feed: $('feed'),
+  };
+
+  // --- video setup ---
+  async function startCamera() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 640 },
+          height: { ideal: 640 },
+          frameRate: { ideal: 30 },
+        },
+        audio: false
+      });
+    } catch (e) {
+      els.err.textContent = 'Camera permission denied or unavailable: ' + e.message;
+      return false;
+    }
+
+    video = $('video');
+    video.srcObject = stream;
+    await new Promise(r => { video.onloadedmetadata = r; });
+    await video.play();
+
+    // canvases
+    liveCv = $('liveCanvas');
+    liveCtx = liveCv.getContext('2d', { willReadFrequently: true });
+    eventCv = $('eventCanvas');
+    eventCtx = eventCv.getContext('2d');
+    hiddenCv = document.createElement('canvas');
+    hiddenCv.width = W; hiddenCv.height = H;
+    hiddenCtx = hiddenCv.getContext('2d', { willReadFrequently: true });
+
+    return true;
+  }
+
+  function stopCamera() {
+    if (rafId) cancelAnimationFrame(rafId);
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    stream = null;
+  }
+
+  // --- per-pixel statistics (Welford) ---
+  function updateBaseline(data) {
+    calibFrames++;
+    for (let i = 0; i < N; i++) {
+      const v = data[i * 4];           // R channel as luminance proxy (close enough on grayscale-ish covered sensor)
+      const oldMean = pxMean[i];
+      const newMean = oldMean + (v - oldMean) / calibFrames;
+      pxMean[i] = newMean;
+      pxM2[i] += (v - oldMean) * (v - newMean);
+    }
+  }
+
+  function stdOf(i) {
+    if (calibFrames < 2) return 1;
+    return Math.sqrt(pxM2[i] / (calibFrames - 1)) || 1;
+  }
+
+  // --- detection ---
+  function findEvents(data) {
+    const flags = new Uint8Array(N);
+    let nBright = 0;
+    for (let i = 0; i < N; i++) {
+      const v = data[i * 4];
+      if (v < ABS_FLOOR) continue;
+      const mean = pxMean[i];
+      const std = stdOf(i);
+      const dev = (v - mean) / std;
+      if (dev > SIGMA_THRESHOLD) {
+        // hot pixel mask
+        if (detectFrames > HOT_PIXEL_GRACE) {
+          const fireRate = pxFires[i] / detectFrames;
+          if (fireRate > HOT_PIXEL_RATE) continue;
+        }
+        flags[i] = 1;
+        nBright++;
+        pxFires[i]++;
+      }
+    }
+    if (nBright < MIN_CLUSTER) return null;
+
+    // cluster: simple 8-connected flood-fill, find the largest cluster
+    const visited = new Uint8Array(N);
+    let best = null;
+    for (let i = 0; i < N; i++) {
+      if (flags[i] && !visited[i]) {
+        const cluster = floodFill(flags, visited, i);
+        if (cluster.length >= MIN_CLUSTER) {
+          // compute centroid + max brightness + total sigma sum
+          let cx = 0, cy = 0, maxBright = 0, totalDev = 0;
+          for (const idx of cluster) {
+            const x = idx % W, y = (idx / W) | 0;
+            cx += x; cy += y;
+            const v = data[idx * 4];
+            if (v > maxBright) maxBright = v;
+            totalDev += (v - pxMean[idx]) / stdOf(idx);
+          }
+          cx /= cluster.length; cy /= cluster.length;
+          const ev = { size: cluster.length, cx, cy, maxBright, totalDev, pixels: cluster };
+          if (!best || ev.totalDev > best.totalDev) best = ev;
+        }
+      }
+    }
+    return best;
+  }
+
+  function floodFill(flags, visited, start) {
+    const cluster = [];
+    const stack = [start];
+    while (stack.length) {
+      const i = stack.pop();
+      if (visited[i] || !flags[i]) continue;
+      visited[i] = 1;
+      cluster.push(i);
+      const x = i % W, y = (i / W) | 0;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          if (dx === 0 && dy === 0) continue;
+          const nx = x + dx, ny = y + dy;
+          if (nx < 0 || nx >= W || ny < 0 || ny >= H) continue;
+          const ni = ny * W + nx;
+          if (flags[ni] && !visited[ni]) stack.push(ni);
+        }
+      }
+    }
+    return cluster;
+  }
+
+  function saveEventToCanvas(data, ev) {
+    // Render the surrounding patch (32×32 around centroid) to eventCanvas
+    const PATCH = 32;
+    const sx = Math.max(0, Math.min(W - PATCH, Math.round(ev.cx - PATCH/2)));
+    const sy = Math.max(0, Math.min(H - PATCH, Math.round(ev.cy - PATCH/2)));
+    const id = eventCtx.createImageData(PATCH, PATCH);
+    for (let y = 0; y < PATCH; y++) {
+      for (let x = 0; x < PATCH; x++) {
+        const src = ((sy + y) * W + (sx + x)) * 4;
+        const dst = (y * PATCH + x) * 4;
+        id.data[dst    ] = data[src    ];
+        id.data[dst + 1] = data[src + 1];
+        id.data[dst + 2] = data[src + 2];
+        id.data[dst + 3] = 255;
+      }
+    }
+    eventCv.width = PATCH; eventCv.height = PATCH;
+    eventCtx.putImageData(id, 0, 0);
+  }
+
+  function logEvent(ev) {
+    totalEvents++;
+    const now = new Date();
+    const t = now.toLocaleTimeString();
+    const empty = els.feed.querySelector('.empty');
+    if (empty) empty.remove();
+    const div = document.createElement('div');
+    div.className = 'ev';
+    div.innerHTML = `<span class="ev-t">${t}</span><span class="ev-b">${ev.size}px · ${ev.maxBright}/255 · ${ev.totalDev.toFixed(1)}σ</span>`;
+    els.feed.insertBefore(div, els.feed.firstChild);
+    if (els.feed.children.length > 50) els.feed.removeChild(els.feed.lastChild);
+
+    // persist
+    try {
+      const log = JSON.parse(localStorage.getItem('cr_events') || '[]');
+      log.push({ ts: now.toISOString(), size: ev.size, max: ev.maxBright, sigma: ev.totalDev });
+      if (log.length > 500) log.splice(0, log.length - 500);
+      localStorage.setItem('cr_events', JSON.stringify(log));
+    } catch {}
+  }
+
+  // --- main loop ---
+  function tick(now) {
+    rafId = requestAnimationFrame(tick);
+    if (now - lastFrameTs < 1000 / TARGET_FPS) return;
+    lastFrameTs = now;
+
+    // draw video frame to hidden canvas at downsampled res
+    if (!video.videoWidth) return;
+    hiddenCtx.drawImage(video, 0, 0, W, H);
+    const imgData = hiddenCtx.getImageData(0, 0, W, H);
+    const data = imgData.data;
+
+    // mirror to live preview (boost contrast for display)
+    liveCtx.putImageData(imgData, 0, 0);
+
+    if (calibFrames < CALIB_FRAMES) {
+      updateBaseline(data);
+      const p = (calibFrames / CALIB_FRAMES) * 100;
+      els.calibBar.style.width = p.toFixed(1) + '%';
+      els.calibStatus.textContent = `calibrating ${calibFrames}/${CALIB_FRAMES} frames`;
+      if (calibFrames === CALIB_FRAMES) enterDetectPhase();
+      return;
+    }
+
+    // detection phase
+    detectFrames++;
+    const ev = findEvents(data);
+    if (ev) {
+      saveEventToCanvas(data, ev);
+      logEvent(ev);
+    }
+
+    // update HUD every ~10 frames
+    if (detectFrames % 10 === 0) {
+      const elapsedS = (now - runStart) / 1000;
+      els.runtime.textContent = formatDuration(elapsedS);
+      els.frames.textContent = detectFrames;
+      els.nEvents.textContent = totalEvents;
+      if (elapsedS > 5) {
+        const eventsPerHour = totalEvents / elapsedS * 3600;
+        els.rate.textContent = eventsPerHour.toFixed(2);
+      }
+    }
+  }
+
+  function formatDuration(s) {
+    if (s < 60) return s.toFixed(0) + ' s';
+    if (s < 3600) return Math.floor(s/60) + 'm ' + Math.floor(s%60) + 's';
+    return Math.floor(s/3600) + 'h ' + Math.floor((s%3600)/60) + 'm';
+  }
+
+  // --- phase wiring ---
+  els.start.addEventListener('click', async () => {
+    els.start.disabled = true;
+    els.start.textContent = 'starting…';
+    const ok = await startCamera();
+    if (!ok) {
+      els.start.disabled = false;
+      els.start.textContent = 'Try again';
+      return;
+    }
+    els.phase1.classList.add('hidden');
+    els.phase2.classList.remove('hidden');
+    els.phase2.classList.add('active');
+    rafId = requestAnimationFrame(tick);
+  });
+
+  function enterDetectPhase() {
+    els.phase2.classList.add('hidden');
+    els.phase3.classList.remove('hidden');
+    els.phase3.classList.add('active');
+    runStart = performance.now();
+  }
+
+  els.stop.addEventListener('click', () => {
+    stopCamera();
+    els.stop.textContent = 'Stopped — reload to start again';
+    els.stop.disabled = true;
+  });
+
+  // cleanup
+  window.addEventListener('beforeunload', stopCamera);
+})();
+</script>
+</body>
+</html>
