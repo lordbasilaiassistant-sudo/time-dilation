@@ -112,17 +112,58 @@ The "Future Travel" panel shows realistic engineering scenarios and the answer t
 
 ---
 
-## Open questions this sim is meant to explore
+## Can we build a real time machine?
 
-- [ ] **Practical future-jump regimes.** At what `v` or `r` does dilation start to feel
-  like real time travel rather than a metrology curiosity?
-- [ ] **The asymmetry / return problem.** You can fast-forward yourself, but you arrive
-  in a future you can never go back from. Sim should make this visceral.
-- [ ] **Twin paradox.** B leaves at relativistic speed, turns around, returns. A and B
-  are at the same place at the end — A is older. The "paradox" is resolved by which
-  twin accelerated. (Planned mode.)
+Short answer: **yes, but only forward, and the bill is enormous.** Time dilation is
+real one-way time travel. The cheapest already-operational time machine is "spend a
+long time on the ISS" (~10 ms/year of forward jump). The next-cheapest is "engineer
+relativistic flight" — which nobody has done, because:
+
+| Goal (100 kg person) | Kinetic energy needed | In familiar units |
+|---|---|---|
+| γ = 1.0001 (8 hr forward/year)  | 9.0 × 10¹² J     | ~2 kt TNT |
+| γ = 1.155 (0.5 c — 57 days/yr) | 1.39 × 10¹⁸ J    | ~330 Mt — bigger than Tsar Bomba |
+| γ = 2     (0.866 c — 1 yr/yr)  | 8.99 × 10¹⁸ J    | ~2.1 Gt — ~1.5% world annual energy |
+| γ = 7     (0.99 c)             | 5.39 × 10¹⁹ J    | ~13 Gt |
+| γ = 70    (0.9999 c — 69 yr/yr) | 6.27 × 10²⁰ J   | **~world annual energy budget** |
+
+Gravitational time dilation has the same problem — you need a black hole. There
+are no nearby black holes. The nearest known stellar-mass black hole (Gaia BH1)
+is ~1,560 light-years away.
+
+**The honest path to "real" forward time travel for a human:**
+1. Long-duration LEO mission. ~10 ms/year. Cumulative record: Krikalev, ~20 ms.
+2. Future fusion-powered drive at 0.01–0.1 c. Decades to centuries of jump per
+   long voyage. Not built yet.
+3. There is no third option that isn't speculative-engineering.
+
+The **`experiments/` folder** of this repo is the alternative: *cheap apparatus to
+prove time dilation is happening to particles and signals around you right now*.
+
+## Build the physics yourself — `experiments/`
+
+| Experiment | Cost | What it proves |
+|---|---|---|
+| [Cloud chamber](experiments/cloud-chamber/)         | $15–80   | SEE muons that should not have survived 15 km |
+| [GPS time-dilation decoder](experiments/gps-time-dilation/) | ~$60     | Decode the +38 µs/day SR+GR correction from raw L1 signals |
+| [Muon detector (CosmicWatch v3X)](experiments/muon-detector/) | ~$100    | Quantitative — muon flux at sea level is 0.756 cm⁻²·min⁻¹, ~10⁹× more than naive prediction |
+| [Mini Hafele-Keating](experiments/hafele-keating-mini/)    | $300–3,000 | Two clocks, drive one fast, measure ps-level offset |
+| [Pound-Rebka style](experiments/pound-rebka/)               | $10,000+  | 14.4 keV gamma redshift over a 22 m tower |
+
+All of them measure the same physics in different regimes. Cheapest visceral
+proof of time dilation in your house: **cloud chamber, $20**.
+
+## Open questions
+
+- [ ] **Twin paradox mode in the sim.** B leaves at relativistic speed, turns
+  around, returns. A and B are at the same place at the end — A is older. The
+  "paradox" is resolved by which twin accelerated.
 - [ ] **Gravitational redshift visualization.** Light climbing out of a well loses
-  energy — the same thing as B's clock ticking slow, just photographed in wavelength.
+  energy in real time — the same thing as B's clock ticking slow, just photographed
+  in wavelength.
+- [ ] **Combined SR+GR scenarios** (ISS, GPS satellite as a proper net calculation).
+- [ ] **A working CosmicWatch build photo and rate plot in `experiments/muon-detector/`.**
+  Wanted: someone runs the experiment, contributes data and a writeup.
 
 ---
 
