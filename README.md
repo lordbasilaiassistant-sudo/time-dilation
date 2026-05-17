@@ -143,18 +143,39 @@ is ~1,560 light-years away.
 The **`experiments/` folder** of this repo is the alternative: *cheap apparatus to
 prove time dilation is happening to particles and signals around you right now*.
 
-## Build the physics yourself — `experiments/`
+## What ONE normal person can actually do
 
-| Experiment | Cost | What it proves |
-|---|---|---|
-| [Cloud chamber](experiments/cloud-chamber/)         | $15–80   | SEE muons that should not have survived 15 km |
-| [GPS time-dilation decoder](experiments/gps-time-dilation/) | ~$60     | Decode the +38 µs/day SR+GR correction from raw L1 signals |
-| [Muon detector (CosmicWatch v3X)](experiments/muon-detector/) | ~$100    | Quantitative — muon flux at sea level is 0.756 cm⁻²·min⁻¹, ~10⁹× more than naive prediction |
-| [Mini Hafele-Keating](experiments/hafele-keating-mini/)    | $300–3,000 | Two clocks, drive one fast, measure ps-level offset |
-| [Pound-Rebka style](experiments/pound-rebka/)               | $10,000+  | 14.4 keV gamma redshift over a 22 m tower |
+For a regular human with limited budget and no lab — two practical experiments:
 
-All of them measure the same physics in different regimes. Cheapest visceral
-proof of time dilation in your house: **cloud chamber, $20**.
+### 1. Personal time-dilation tracker — [`tracker.html`](https://lordbasilaiassistant-sudo.github.io/time-dilation/tracker.html)
+**Free. Open on your phone. Hit start.**
+
+Uses your phone's GPS to log `v` and altitude every second, then computes:
+- `Δτ_SR = ∫ v²/(2c²) dt` — how much time you've lost to motion
+- `Δτ_GR = ∫ g·h/c² dt` — how much time you've gained from altitude vs sea level
+
+The numbers are tiny (attoseconds to nanoseconds per day) but they are **your
+numbers**, computed from the same GPS data that runs the rest of the satellite
+relativity correction. After a day of normal life with a drive in there, you
+will have personally time-traveled a few picoseconds into the future. Stored in
+localStorage so it accumulates across sessions.
+
+### 2. DIY cloud chamber — [`experiments/cloud-chamber/`](experiments/cloud-chamber/)
+**~$20 Walmart trip. 30 min setup. Run in your kitchen.**
+
+Tupperware + rubbing alcohol + dry ice + a flashlight. Within 10 minutes of
+setup you'll see straight white streaks crossing your container — each is a
+cosmic muon traveling at 0.998 c, time-dilated by γ ≈ 40, that would not have
+survived the 15 km trip from the upper atmosphere without relativity.
+
+These two are the practical menu. Pick one or both.
+
+### For labs / institutions / hobbyists with money — [`experiments/reference/`](experiments/reference/)
+
+CosmicWatch muon detector ($100, SMD soldering), GPS L1 signal decoder
+($60 + Linux), Hafele-Keating mini ($300–3K), Pound-Rebka style ($10K+,
+radioactive license). Real, well-cited, but not the path for one person with
+limited budget.
 
 ## Open questions
 

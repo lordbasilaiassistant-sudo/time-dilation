@@ -1,73 +1,47 @@
-# Experiments — making time dilation real with your own hands
+# Experiments — what you can actually do
 
-The honest truth about a "time machine" using time dilation:
+The two things one normal person with no lab and limited budget can do to
+*experience* time dilation:
 
-> **You cannot build a device that creates a perceptible time-dilation field at any
-> price humans can pay.** The math forbids it — kinetic energy scales as `(γ−1)mc²`,
-> and `c²` is `9×10¹⁶ m²/s²`. For a 100 kg human to time-travel at γ=2 (one year
-> forward per year experienced), you need ~9×10¹⁸ J ≈ 1.5% of *world annual energy
-> consumption*. The closest thing to a "real" time machine humans have access to is
-> a high orbit or a long fast trip — cosmonaut Sergei Krikalev is the human record
-> holder at ~20 ms of accumulated forward dilation from 803 days in orbit.
+| # | Experiment | Cost | Time | What you get |
+|---|-----------|------|------|--------------|
+| 1 | [Personal time tracker (this repo, `tracker.html`)](../tracker.html) | **$0** | 0 min | Open on your phone, watch your own SR + GR dilation in real time |
+| 2 | [DIY cloud chamber](cloud-chamber/) | **~$20** | 2 hours | SEE cosmic muons in your kitchen — particles that prove time dilation by *existing* |
 
-What you *can* do, and what this folder is for: **observe time dilation that's
-already happening, with cheap equipment, and prove it's real with your own data.**
+That's the practical menu for a regular human. Pick one or both.
 
 ---
 
-## Pick your experiment
+## "Why so short? You had five experiments before."
 
-Ordered cheapest → most expensive, easiest → hardest, qualitative → most precise.
+The other three (muon detector with SiPM + Arduino, Hafele-Keating with atomic
+clocks, Pound-Rebka with radioactive sources) are real and well-documented, but
+they require thousands of dollars, soldering, regulatory licenses, or 22 m of
+vertical building. They belong in a university lab, not in *your* life.
 
-| # | Experiment | Cost | What it proves | Difficulty |
-|---|-----------|------|----------------|------------|
-| 1 | [Cloud chamber](cloud-chamber/) | **$15–80** | You can SEE muons crossing your living room that shouldn't be alive | ★☆☆☆☆ |
-| 2 | [GPS time-dilation decoder](gps-time-dilation/) | **$60–80** | The 38 µs/day SR+GR correction is in the GPS signal you receive | ★★☆☆☆ |
-| 3 | [Muon detector (CosmicWatch v3X)](muon-detector/) | **~$100** | Quantitative measurement: muons live 8-40× longer than they should | ★★★☆☆ |
-| 4 | [Mini Hafele-Keating](hafele-keating-mini/) | **$300–3,000** | Two clocks, drive one fast, measure the offset | ★★★★☆ |
-| 5 | [Pound-Rebka style gravitational redshift](pound-rebka/) | **$10,000+** | GR shifts 14.4 keV gamma over a 22 m tower | ★★★★★ |
+If you ever want them anyway, they're in [`reference/`](reference/) — kept for
+completeness, not as suggestions.
 
-## The principle each experiment exploits
+---
 
-- **#1, #3:** Cosmic muons created 15 km up at γ ≈ 38 (4 GeV mean) have proper
-  lifetime 2.197 µs. Without dilation, they'd travel 0.998 c × 2.197 µs = 660 m
-  and never reach you. They do reach you (0.756 cm⁻²·min⁻¹ in coincidence at sea
-  level), because in Earth's frame their lifetime stretches to ~84 µs — they
-  travel 25 km and punch through your roof.
-- **#2:** GPS satellites at ~20,200 km altitude experience SR slowing (−7 µs/day)
-  and GR speeding (+45 µs/day), net +38 µs/day fast. The broadcast nav message
-  carries the correction; without it, GPS would be off by ~10 km/day.
-- **#4:** Move a precise clock relative to a stationary one. Special relativity
-  says the moving one ticks slower by γ. Atomic-clock grade gear shows this
-  directly; GPS-disciplined oscillators do it on a hobbyist budget.
-- **#5:** A photon climbing a gravitational potential redshifts by `gh/c²`.
-  At 22 m on Earth, that's ~2.5×10⁻¹⁵ — only detectable because the Mössbauer
-  effect with Fe-57 gives you a Q ≈ 10¹² spectral line.
+## How the two main experiments map to the physics
 
-Every one of these is forward time dilation, the same effect, just measured at
-different scales of precision.
+**Personal tracker (digital):**
+- Tracks `Δτ_SR = ∫ v²/(2c²) dt` from your phone's GPS speed
+- Tracks `Δτ_GR = ∫ g·h/c² dt` from your phone's GPS altitude
+- Shows the running net dilation in attoseconds → microseconds
+- *Best case for one day:* drive several hours at highway speed, spend a few
+  hours above 300 m elevation. Expect picoseconds to nanoseconds of net
+  dilation. The numbers are small but they're **your numbers**, computed from
+  GPS data the satellites send you.
 
-## What about a "real" time machine?
+**Cloud chamber (physical):**
+- You see straight white tracks from muons hitting your chamber at ~1 per minute
+- Each muon was created ~15 km up, has proper lifetime 2.197 µs, traveling at
+  0.998 c
+- *Without time dilation* it would decay in 660 m and never reach you
+- *With time dilation* (γ ≈ 40), it lives ~83 µs in your frame and travels 25 km
+- You are watching real time dilation happen, by eye
 
-The cheapest, highest-leverage forward-time-travel humans currently use is **a
-fast jet at high altitude** — pilots accumulate small amounts of dilation
-(faster motion = SR slowing; higher altitude = GR speeding, net depends on flight
-profile). Astronauts on ISS accumulate roughly **−10 ms/year** vs Earth surface
-(SR dominates LEO). The all-time record is Sergei Krikalev's ~20 ms.
-
-If you're serious about *being* in the future relative to everyone else, your
-choices are:
-1. Spend a long time on the ISS or a future LEO station (~10 ms/year).
-2. Get launched on a relativistic-flyby probe (none exist; theoretical only).
-3. Find a black hole and hover (no nearby black holes; would also kill you).
-
-There is no fourth option. There is no material, alloy, geometry, or device that
-makes this cheaper. The fact-check is in the energy column of the simulator.
-
-## Add a new experiment
-
-Pull requests welcome. The bar for inclusion:
-1. Real physics, citation to a peer-reviewed source.
-2. BOM with current prices and supplier URLs.
-3. Quantitative prediction so the builder knows if it worked.
-4. Honest cost — don't lowball.
+These two are the cheapest fact-based ways for one human to engage with the
+real physics. Everything else in this folder is documentation, not a TODO.

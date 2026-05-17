@@ -1,96 +1,119 @@
-# Cloud chamber — see time-dilated muons with your eyes
+# DIY Cloud Chamber — see time dilation in your kitchen
 
-**Cost:** **$15–80** (DIY with dry ice + isopropanol; commercial kits exist for $399)
-**Time to build:** afternoon
-**Difficulty:** ★☆☆☆☆
-**What it proves:** Cosmic muons that should not have lived long enough to reach
-you are visibly tearing through your living room. You can see their tracks.
-
-This is the cheapest and most visual time-dilation experiment. It's qualitative
-(you can't easily fit γ from track counts), but it's the demo that turns time
-dilation from a number on a screen into a streak of cloud you can point at.
+**Cost:** $15–20, single Walmart/Kroger trip
+**Time:** 30 min setup, 10 min wait, then it runs for ~1 hour
+**Difficulty:** ★☆☆☆☆ (no electronics, no soldering, no programming)
+**What you get:** White streaks crossing your tank every minute or so. Each is a
+cosmic muon that should not exist by its naked lifetime — it only made the trip
+to your kitchen because time slowed for it by ~40×.
 
 ---
 
-## How it works
+## Walmart shopping list
 
-A supersaturated alcohol vapor layer is unstable. A charged particle passing
-through ionizes the alcohol molecules, which become condensation nuclei — a thin
-trail of droplets forms within milliseconds, hangs for a few seconds, then
-disperses. **You see the path the particle took.**
-
-About 75% of cosmic rays reaching the ground are muons. Each one is a piece of
-particle physics that traveled ~25 km at 0.9997 c because time slowed for it by
-γ ≈ 40. **The cloud chamber is your camera into that.**
-
-## DIY build — under $20 in materials
-
-Full plans from CERN's S'Cool LAB: https://scoollab.web.cern.ch/cloud-chamber
-
-Materials:
-- A clear acrylic or glass container, ~15×15 cm and 5–10 cm deep (a fish tank
-  works, a baking dish covered with plexiglass works)
-- Felt strip cut to fit the rim
-- 99% isopropyl alcohol (~$5/bottle at hardware store)
-- A flat metal plate (aluminum baking sheet, painted matte black)
-- **Dry ice** — 2–3 kg. ~$2–4/kg at supermarkets that carry it, or local welding-
-  gas suppliers. Use thermal gloves.
-- Strong flashlight or LED panel
-- Optional: small permanent magnet for tracks-curving-in-B-field
-
-Steps (CERN's procedure, condensed):
-1. Soak the felt strip in isopropanol, line it around the top edge of the
-   container.
-2. Crush dry ice flat on a tray, place the metal plate on top.
-3. Invert the container (felt up, plate down on dry ice) so the metal plate is
-   the floor of the chamber.
-4. Wait 10 minutes for the cold-warm gradient to stabilize. Vapor saturation
-   builds up.
-5. Shine flashlight horizontally across the bottom of the chamber. Look at the
-   plate from above with eyes adjusted to dark.
-6. **Within 5–10 minutes you'll see tracks.** Most are muons (straight, long),
-   some are alpha (short and fat from radon decay), some are electrons (wiggly).
-
-## Commercial alternatives if you don't want to source dry ice
-
-- **Arbor Scientific Cloud Chamber** — $399 single, uses freezer-chilled cold
-  plate (no dry ice required). https://www.arborsci.com/products/cloud-chamber
-- **CL Cloud Chamber Kit** on Amazon — typically ~$50–80, dry ice required.
-
-## What you're seeing — quick taxonomy
-
-| Track type | Source | Visual |
+| Item | Where | Price |
 |---|---|---|
-| **Muon** | Cosmic ray, ~75% of ground-level radiation | Long, very straight, ~1 cm/s through chamber |
-| **Alpha** | Radon decay (~5–10 events/min in a typical room) | Short (1–3 cm), thick, ionizes heavily |
-| **Beta / electron** | Beta decay or cosmic-ray electron | Wiggly, often curved, lighter |
-| **Cosmic shower** | High-energy primary fragmenting | Multiple tracks from a single point |
+| Clear plastic container, ~15×15 cm, ~5 cm deep (Tupperware, Snapware, fish-tank lid, glass bake dish) | kitchen aisle | **$3–5** (you may have one) |
+| 99% isopropyl alcohol, 16 oz bottle | pharmacy aisle | **~$5** |
+| Black felt or thick black cloth, ~30×30 cm strip | crafts aisle or scrap | **~$3** |
+| Aluminum baking sheet or pie tin | kitchen aisle | **~$3** (you may have one) |
+| Strong flashlight | hardware aisle (you have one) | $0 |
+| **Dry ice, ~2–3 kg** | gas station, Kroger, Publix, Walmart freezer; CALL AHEAD | **$10–15** |
+| Thick gloves (oven mitts work) | (you have these) | $0 |
+| Black permanent marker (Sharpie) | school supplies | ~$2 |
+| **TOTAL** | | **$15–25** |
 
-The straight tracks crossing the whole chamber are almost certainly muons. Count
-how many you see per minute. In a 15×15 cm chamber, expect ~1 visible muon per
-minute (geometry-limited compared to the 1 cm⁻²·min⁻¹ flux).
+Dry ice: not every store carries it. Call ahead. In US: Kroger / Publix / Safeway
+usually do. Some Walmarts do. Also try a local welding/gas supply company
+(cheaper, ~$1–2 per pound, but you need to bring a cooler).
 
-## Quantitative extension
+## Build
 
-If you put a 4–6 cm thick lead brick **inside** the chamber, you'll see some
-muons get absorbed (track stops at lead), but most punch through. This is direct
-evidence of their high energy (4 GeV mean) — alphas and betas would stop in
-~mm of lead.
+1. **Cut the felt** to fit inside the lid of your container.
+2. **Saturate the felt** with isopropyl alcohol — pour until it can't soak any
+   more, then let the excess drip out. The felt should be wet but not pooling.
+3. **Stick the felt to the lid** (tape it, or just let surface tension hold it).
+4. **Paint the bottom of the container black** with the Sharpie, OR put a sheet
+   of black paper at the bottom. You're looking at the floor of the chamber
+   under a flashlight, and contrast is everything.
+5. **Crush the dry ice flat** on the baking sheet. Aim for an even ~2 cm
+   thickness layer. Wear gloves — dry ice is −78°C.
+6. **Invert your container** (lid down, with the alcohol-soaked felt on the bottom
+   when inverted — wait, do this carefully) so:
+   - The black-painted bottom of the container is now the *top* (you'll look
+     through it from above)
+   - The alcohol-felt lid is now the *floor*
+   - Press the alcohol-felt lid down onto the crushed dry ice
+   - The container is now sealed, with cold floor + warm top + saturated alcohol
+     vapor in between
+7. **Wait 10 minutes** for the temperature gradient to stabilize and vapor
+   saturation to build up.
+8. **Turn off the lights.** Let your eyes adjust to dark for 2 minutes.
+9. **Shine the flashlight horizontally** across the bottom of the chamber
+   (which is now the top when inverted — ugh, this language. The point is: shine
+   light parallel to the felt layer, looking down through the clear top of the
+   container).
+10. **Look.** Within 5 minutes you should see straight white streaks appearing
+    and fading. Each streak is a particle ionizing a track that becomes alcohol
+    droplets.
+
+Easier alternative geometry: don't invert. Use the container right-side-up with
+the alcohol felt taped to the lid, then sit the container on top of the dry ice
+on the baking sheet. The dry ice cools the bottom of the container, the felt at
+the top releases vapor downward, and the cold bottom creates the supersaturated
+layer. **CERN's S'Cool LAB has photos:** https://scoollab.web.cern.ch/cloud-chamber
+
+## What you'll see
+
+| Track type | Source | Look |
+|---|---|---|
+| **Muon** (your target) | Cosmic ray, ~75% of ground radiation | Long, very straight, full chamber crossings |
+| **Alpha** | Radon decay (background in any room) | Short, thick, intense |
+| **Electron / beta** | Beta decay or cosmic electron | Wiggly, often curved |
+| **Cosmic shower** | High-energy primary fragmenting in atmosphere | Multiple tracks from one point |
+
+Rate at sea level: roughly **1 muon visible per minute** in a 15×15 cm chamber.
+Less if you're indoors with concrete shielding above, more at altitude or near a
+window.
 
 ## Why this is a time-dilation experiment
 
-The muons you see were born ~15 km up. Their proper lifetime is 2.197 µs. At v ≈
-0.998 c they should travel 660 m before decay (in their own frame). They reach
-your kitchen because in *your* frame they live γ ≈ 38× longer — about 84 µs —
-and travel 25 km.
+The straight tracks crossing your chamber are muons created ~15 km above your
+house when cosmic ray protons hit the atmosphere. A muon's proper lifetime is
+**2.197 µs** (PDG 2024 measurement, accurate to parts per million).
 
-**You are watching γ ≈ 38 of time dilation, in real time, with your eyes.**
+If muons didn't experience time dilation, at v ≈ 0.998c they'd travel
+0.998 × 3×10⁸ × 2.197×10⁻⁶ = **658 m** before decay. They'd never reach you.
+Almost zero should hit the ground.
+
+But they do — by the hundreds per square meter per second.
+
+The reason: from your frame, a 4 GeV muon (typical) has Lorentz factor
+γ = E/mc² = 4000/105.7 ≈ **38**. Its lifetime in your frame is 38 × 2.197 = 83
+µs. Distance traveled: 0.998c × 83 µs = **25 km**, easily making the 15 km trip.
+
+**So when you see a straight white streak in your tank, you are seeing a
+particle that has time-dilated by γ ≈ 40 to reach you.** The cloud chamber is
+the cheapest, most viscerally direct time-dilation experiment one human can do
+in their kitchen.
+
+## If it doesn't work
+
+- Not enough alcohol → felt is dry → no vapor → no tracks. Re-saturate.
+- Container too cold all the way through → vapor froze out → no saturated layer.
+  Wait longer for the gradient to stabilize, or reduce dry ice.
+- Lights on, eyes not dark-adapted → tracks invisible. Let your eyes adjust for
+  2+ minutes.
+- Too much background light → bright surface reflections drown out the tracks.
+  Black floor / dark room critical.
 
 ## References
 
+- C.T.R. Wilson, "On a Method of Making Visible the Paths of Ionising
+  Particles through a Gas," Proc. Roy. Soc. A 85, 285 (1911) — Nobel Prize
+  1927 invention of the cloud chamber.
+- PDG 2024 muon listing for τ = 2.1969811(22) µs:
+  https://pdg.lbl.gov/2024/listings/rpp2024-list-muon.pdf
+- PDG cosmic rays review for sea-level flux ~1 cm⁻²·min⁻¹.
 - CERN S'Cool LAB cloud chamber plans:
   https://scoollab.web.cern.ch/cloud-chamber
-- Wilson, C.T.R., "On a Method of Making Visible the Paths of Ionising
-  Particles through a Gas," Proc. Roy. Soc. A 85, 285 (1911). Original
-  invention. Nobel Prize 1927.
-- PDG Cosmic Rays review for muon flux figures.

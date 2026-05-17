@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Your Personal Time Machine</title>
+<style>
+  :root {
+    --bg: #07080c;
+    --panel: #0f1118;
+    --ink: #e6e8ef;
+    --dim: #7b8190;
+    --accent: #7cf9ff;
+    --warm: #ffb86b;
+    --hot: #ff5c7a;
+    --ok: #4cd980;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 540px; margin: 0 auto; padding: 20px 18px 60px; }
+  h1 {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+  .sub { color: var(--dim); font-size: 12px; line-height: 1.5; margin-bottom: 22px; }
+  .sub a { color: var(--accent); text-decoration: none; }
+
+  .start-btn {
+    width: 100%;
+    padding: 18px;
+    background: var(--accent);
+    color: #001318;
+    border: 0;
+    border-radius: 10px;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: 0.15s;
+  }
+  .start-btn:active { transform: scale(0.98); }
+  .start-btn.tracking {
+    background: var(--hot); color: #1a0006;
+  }
+  .start-btn.paused {
+    background: var(--warm); color: #1a0e00;
+  }
+
+  .net-card {
+    border: 1px solid #2a2e3c;
+    border-radius: 12px;
+    padding: 22px;
+    background: linear-gradient(180deg, #0a0c12 0%, #07080c 100%);
+    margin: 18px 0;
+    text-align: center;
+  }
+  .net-lbl {
+    font-size: 11px; color: var(--dim);
+    text-transform: uppercase; letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+  .net-big {
+    font-size: 38px;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+    line-height: 1.1;
+    word-break: break-all;
+  }
+  .net-big.negative { color: var(--hot); }
+  .net-sub {
+    font-size: 12px; color: var(--dim); margin-top: 8px;
+  }
+  .net-sub b { color: var(--warm); }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 10px 0;
+  }
+  .cell {
+    background: var(--panel);
+    border: 1px solid #2a2e3c;
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .cell .lbl {
+    font-size: 10px; color: var(--dim);
+    text-transform: uppercase; letter-spacing: 1.2px;
+  }
+  .cell .val {
+    font-size: 18px;
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+    word-break: break-all;
+  }
+  .cell.sr .val { color: var(--hot); }
+  .cell.gr .val { color: var(--ok); }
+
+  .live-card {
+    background: var(--panel);
+    border: 1px solid #2a2e3c;
+    border-radius: 8px;
+    padding: 14px;
+    margin: 10px 0;
+    font-size: 12px;
+  }
+  .live-card .row2 {
+    display: flex; justify-content: space-between;
+    padding: 4px 0;
+  }
+  .live-card .row2 .k { color: var(--dim); }
+  .live-card .row2 .v { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  .compare {
+    background: #0a0c12;
+    border: 1px solid #2a2e3c;
+    border-radius: 8px;
+    padding: 14px;
+    margin: 14px 0;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .compare .ck { color: var(--dim); }
+  .compare .cv { color: var(--accent); float: right; font-variant-numeric: tabular-nums; }
+  .compare hr { border: 0; border-top: 1px solid #1c1f2a; margin: 8px 0; }
+
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--dim);
+    margin-top: 30px;
+    line-height: 1.7;
+  }
+  .footer a { color: var(--accent); }
+
+  .reset-btn {
+    background: transparent;
+    border: 1px solid #2a2e3c;
+    color: var(--dim);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .reset-btn:hover { color: var(--hot); border-color: var(--hot); }
+
+  .status {
+    text-align: center;
+    font-size: 11px;
+    color: var(--dim);
+    margin: 10px 0;
+    min-height: 14px;
+  }
+  .status.err { color: var(--hot); }
+  .status.ok { color: var(--ok); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>Your Personal Time Machine</h1>
+  <div class="sub">
+    Uses your phone's GPS to measure the real time dilation you accumulate from
+    movement (SR) and altitude (GR). Open this on a phone, hit start, and let
+    it run. Numbers are tiny but they're real — the same physics that runs your
+    GPS. <a href="index.html">← back to sim</a>
+  </div>
+
+  <button id="startBtn" class="start-btn">Start tracking</button>
+  <div class="status" id="status">Idle. Press start.</div>
+
+  <div class="net-card">
+    <div class="net-lbl">Net dilation accumulated</div>
+    <div class="net-big" id="netVal">+0.00 zs</div>
+    <div class="net-sub" id="netSub">Relative to a person standing still at sea level.</div>
+  </div>
+
+  <div class="row">
+    <div class="cell sr">
+      <div class="lbl">SR — movement (slows you)</div>
+      <div class="val" id="srVal">−0.00 zs</div>
+    </div>
+    <div class="cell gr">
+      <div class="lbl">GR — altitude (speeds you)</div>
+      <div class="val" id="grVal">+0.00 zs</div>
+    </div>
+  </div>
+
+  <div class="live-card">
+    <div class="row2"><span class="k">current speed</span><span class="v" id="liveV">— m/s</span></div>
+    <div class="row2"><span class="k">current altitude (WGS84)</span><span class="v" id="liveAlt">— m</span></div>
+    <div class="row2"><span class="k">GPS accuracy (horizontal)</span><span class="v" id="liveAcc">— m</span></div>
+    <div class="row2"><span class="k">samples logged</span><span class="v" id="liveN">0</span></div>
+    <div class="row2"><span class="k">tracking time</span><span class="v" id="liveT">0 s</span></div>
+  </div>
+
+  <div class="compare">
+    <div class="net-lbl" style="margin-bottom: 8px">For scale</div>
+    <div><span class="ck">ISS astronaut, 1 day in orbit</span><span class="cv">~28 ns slow</span></div>
+    <div><span class="ck">Cosmonaut Krikalev, lifetime record</span><span class="cv">~20 ms (the human max)</span></div>
+    <div><span class="ck">You, since start</span><span class="cv" id="cmpYou">+0 zs</span></div>
+    <hr>
+    <div><span class="ck">% of Krikalev's record</span><span class="cv" id="cmpPct">0.0e+0 %</span></div>
+    <div><span class="ck">Equivalent ISS-astronaut-time</span><span class="cv" id="cmpIss">0.0e+0 s</span></div>
+  </div>
+
+  <button id="resetBtn" class="reset-btn">Reset totals</button>
+
+  <div class="footer">
+    Persists across reloads in browser localStorage. No data leaves your device.<br>
+    Physics: <code>Δτ_SR = −v²/(2c²) dt</code>, <code>Δτ_GR = +gh/c² dt</code> vs sea level.<br>
+    <a href="https://github.com/lordbasilaiassistant-sudo/time-dilation">github →</a>
+  </div>
+</div>
+
+<script>
+(() => {
+  const C = 299792458;
+  const C2 = C * C;
+  const G_EARTH = 9.80665;
+
+  const KRIKALEV_S = 0.020;          // 20 ms record
+  const ISS_S_PER_DAY = 28e-9;       // 28 ns/day net SR-GR slowdown for ISS
+
+  const els = {
+    start: document.getElementById('startBtn'),
+    reset: document.getElementById('resetBtn'),
+    status: document.getElementById('status'),
+    net: document.getElementById('netVal'),
+    netSub: document.getElementById('netSub'),
+    sr: document.getElementById('srVal'),
+    gr: document.getElementById('grVal'),
+    v: document.getElementById('liveV'),
+    alt: document.getElementById('liveAlt'),
+    acc: document.getElementById('liveAcc'),
+    n: document.getElementById('liveN'),
+    t: document.getElementById('liveT'),
+    cmpYou: document.getElementById('cmpYou'),
+    cmpPct: document.getElementById('cmpPct'),
+    cmpIss: document.getElementById('cmpIss'),
+  };
+
+  const state = {
+    watchId: null,
+    lastT: null,
+    lastV: 0,
+    lastAlt: 0,
+    samples: 0,
+    startTs: null,
+    elapsedS: 0,
+    totalSR: 0,  // positive: how much time you've LOST to motion
+    totalGR: 0,  // positive: how much time you've GAINED vs sea level
+  };
+
+  // --- persistence ---
+  function save() {
+    localStorage.setItem('td_v2', JSON.stringify({
+      sr: state.totalSR, gr: state.totalGR, n: state.samples, t: state.elapsedS
+    }));
+  }
+  function load() {
+    try {
+      const d = JSON.parse(localStorage.getItem('td_v2') || '{}');
+      state.totalSR = +d.sr || 0;
+      state.totalGR = +d.gr || 0;
+      state.samples = +d.n || 0;
+      state.elapsedS = +d.t || 0;
+    } catch {}
+  }
+  load();
+
+  // --- formatting ---
+  function formatSeconds(s) {
+    const abs = Math.abs(s);
+    const sign = s >= 0 ? '+' : '−';
+    let body;
+    if (abs < 1e-21) body = '0.00 zs';
+    else if (abs < 1e-18) body = (abs * 1e21).toFixed(2) + ' zs';
+    else if (abs < 1e-15) body = (abs * 1e18).toFixed(2) + ' as';
+    else if (abs < 1e-12) body = (abs * 1e15).toFixed(2) + ' fs';
+    else if (abs < 1e-9)  body = (abs * 1e12).toFixed(2) + ' ps';
+    else if (abs < 1e-6)  body = (abs * 1e9).toFixed(2) + ' ns';
+    else if (abs < 1e-3)  body = (abs * 1e6).toFixed(2) + ' µs';
+    else if (abs < 1)     body = (abs * 1000).toFixed(2) + ' ms';
+    else                  body = abs.toFixed(3) + ' s';
+    return sign + body;
+  }
+  function formatDuration(s) {
+    if (s < 60) return s.toFixed(0) + ' s';
+    if (s < 3600) return Math.floor(s/60) + 'm ' + Math.floor(s%60) + 's';
+    if (s < 86400) return Math.floor(s/3600) + 'h ' + Math.floor((s%3600)/60) + 'm';
+    return Math.floor(s/86400) + 'd ' + Math.floor((s%86400)/3600) + 'h';
+  }
+
+  // --- core ---
+  function onPosition(pos) {
+    const tSec = pos.timestamp / 1000;
+    const v = pos.coords.speed != null && !isNaN(pos.coords.speed) ? Math.max(0, pos.coords.speed) : 0;
+    const alt = pos.coords.altitude != null && !isNaN(pos.coords.altitude) ? pos.coords.altitude : 0;
+    const acc = pos.coords.accuracy || 0;
+
+    if (state.lastT !== null) {
+      const dt = tSec - state.lastT;
+      if (dt > 0 && dt < 60) {
+        // trapezoidal: use average of consecutive samples
+        const avgV = (v + state.lastV) / 2;
+        const avgAlt = (alt + state.lastAlt) / 2;
+
+        // SR slowdown: dτ_lost = (v²/(2c²)) * dt
+        state.totalSR += (avgV * avgV / (2 * C2)) * dt;
+        // GR speedup vs sea level: dτ_gained = (g·h/c²) * dt
+        state.totalGR += (G_EARTH * avgAlt / C2) * dt;
+        state.elapsedS += dt;
+        state.samples++;
+      }
+    }
+    state.lastT = tSec;
+    state.lastV = v;
+    state.lastAlt = alt;
+
+    // UI
+    els.v.textContent = v.toFixed(2) + ' m/s';
+    els.alt.textContent = alt.toFixed(1) + ' m';
+    els.acc.textContent = acc.toFixed(1) + ' m';
+
+    save();
+    render();
+  }
+
+  function onError(err) {
+    els.status.textContent = 'GPS error: ' + (err.message || err.code);
+    els.status.className = 'status err';
+    stopTracking();
+  }
+
+  function startTracking() {
+    if (!navigator.geolocation) {
+      els.status.textContent = 'Geolocation not available on this device.';
+      els.status.className = 'status err';
+      return;
+    }
+    els.status.textContent = 'Requesting GPS permission…';
+    els.status.className = 'status';
+    state.startTs = Date.now();
+    state.lastT = null;
+    state.watchId = navigator.geolocation.watchPosition(
+      onPosition, onError,
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 }
+    );
+    els.start.textContent = 'Stop tracking';
+    els.start.className = 'start-btn tracking';
+  }
+
+  function stopTracking() {
+    if (state.watchId !== null) {
+      navigator.geolocation.clearWatch(state.watchId);
+      state.watchId = null;
+    }
+    state.lastT = null;
+    els.start.textContent = 'Resume tracking';
+    els.start.className = 'start-btn paused';
+    if (!els.status.classList.contains('err')) {
+      els.status.textContent = 'Paused. Totals saved to localStorage.';
+      els.status.className = 'status ok';
+    }
+  }
+
+  function render() {
+    const net = state.totalGR - state.totalSR;  // positive = ahead of sea-level-stationary
+    els.sr.textContent = formatSeconds(-state.totalSR);
+    els.gr.textContent = formatSeconds(+state.totalGR);
+    els.net.textContent = formatSeconds(net);
+    els.net.className = 'net-big' + (net < 0 ? ' negative' : '');
+    els.netSub.innerHTML = net >= 0
+      ? `You've traveled <b>${formatSeconds(net).replace('+','')} into the future</b> relative to someone standing still at sea level.`
+      : `You're <b>${formatSeconds(-net).replace('+','')} behind</b> someone standing still at sea level (your motion outweighed your altitude).`;
+    els.n.textContent = state.samples;
+    els.t.textContent = formatDuration(state.elapsedS);
+
+    // comparisons
+    const absNet = Math.abs(net);
+    els.cmpYou.textContent = formatSeconds(net);
+    const pct = absNet / KRIKALEV_S * 100;
+    els.cmpPct.textContent = pct.toExponential(2) + ' %';
+    const issDays = absNet / ISS_S_PER_DAY;
+    els.cmpIss.textContent = issDays < 1
+      ? (issDays * 86400).toFixed(2) + ' s'
+      : issDays.toFixed(3) + ' days';
+  }
+
+  els.start.addEventListener('click', () => {
+    if (state.watchId !== null) stopTracking();
+    else startTracking();
+  });
+
+  els.reset.addEventListener('click', () => {
+    if (!confirm('Reset all accumulated dilation totals?')) return;
+    state.totalSR = state.totalGR = state.samples = state.elapsedS = 0;
+    state.lastT = null;
+    localStorage.removeItem('td_v2');
+    render();
+    els.status.textContent = 'Totals reset.';
+    els.status.className = 'status ok';
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
